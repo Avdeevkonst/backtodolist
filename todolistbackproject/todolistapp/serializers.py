@@ -16,7 +16,7 @@ class TodoListSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    tasks = serializers.HyperlinkedRelatedField(many=True, view_name='todo-detail', read_only=True)
+    tasks = serializers.HyperlinkedRelatedField(many=True, view_name='todolist', read_only=True)
 
     def create(self, validated_data):
         user_instance = UserModel.objects.create_user(**validated_data)
@@ -64,9 +64,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = (
-            'email', 'password', 'token'
-        )
+        fields = ('email', 'password', 'token')
 
     def create(self, validated_data):
         return UserModel.objects.create_user(**validated_data)

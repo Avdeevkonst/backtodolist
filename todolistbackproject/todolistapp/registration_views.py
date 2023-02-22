@@ -22,7 +22,7 @@ class UserAuthenticationView(GenericAPIView):
     def post(self, request):
         # email = request.data['email']
         # password = request.data['password']
-        # token = request.data['token']
+
         # user = UserModel.objects.filter(email=email).first()
         # if not user.check_password(password):
         #     raise AuthenticationFailed('Incorrect password!')
