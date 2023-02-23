@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import UserModel, TodoListModel
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
+from django.http import JsonResponse
 
 
 class TodoListSerializer(serializers.ModelSerializer):
@@ -43,7 +44,7 @@ class LoginSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ('email', 'password', 'token')
 
-    def validate(self, data):
+    def validate(self, data): 
         email = data.get('email', None)
         password = data.get('password', None)
         user = auth.authenticate(email=email, password=password)
@@ -51,11 +52,12 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Account is banned from admin, create new account')
         if not user:
             raise AuthenticationFailed('invalid credentials, try again')
-        return {
+        token = {
             'email': user.email,
             'token': user.token
         }
-
+        return JsonResponse(token)
+        
 
 class RegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=50)

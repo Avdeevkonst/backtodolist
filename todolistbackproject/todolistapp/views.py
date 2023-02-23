@@ -11,7 +11,7 @@ from .permissions import IsOwner
 class TodolistCreate(ListCreateAPIView):
     serializer_class = TodoListSerializer
     queryset = TodoListModel.objects.all()
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
@@ -23,7 +23,7 @@ class TodolistCreate(ListCreateAPIView):
 class TodolistDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = TodoListSerializer
     queryset = TodoListModel.objects.all()
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (IsAuthenticated, IsOwner)
     lookup_field = 'id'
 
     def perform_create(self, serializer):
@@ -33,11 +33,25 @@ class TodolistDetail(RetrieveUpdateDestroyAPIView):
         return self.queryset.filter(owner=self.request.user)
 
 
-class UserView(APIView):
-    permission_classes = (IsAuthenticated, )
+class UserView(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = TodoListModel.objects.all()
 
-    def get(self, request):
-        return Response({'title': 'get request'})
+    def get(self, request, *args, **kwargs):
+        example = (
+            {
+                'id': 0,
+                'title': 'Todo 1',
+                'completed': 'false'
+            },
+            {
+                'id': 1,
+                'title': 'Todo 2',
+                'completed': 'False'
+            }
+        )
+        return Response(example)
 
-    def post(self, request):
-        return Response({'title': 'post request'})
+    def get_queryset(self):
+        task = self.request.user.id
+        return self.queryset.filter(id=task)

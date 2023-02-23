@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 from datetime import datetime, timedelta
 from todolistbackproject import settings
+import json
 
 
 class TodoListModel(models.Model):
@@ -73,9 +74,11 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return self.email
 
-    def token(self):
-        refresh = RefreshToken.for_user(self)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
-        }
+    # def token(self):
+    #     refresh = RefreshToken.for_user(self)
+    #     token = {
+    #         'refresh': str(refresh),
+    #         'access': str(refresh.access_token)
+    #     }
+    #     return token
+              
