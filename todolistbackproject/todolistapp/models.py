@@ -1,10 +1,5 @@
 from django.db import models, IntegrityError
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from rest_framework_simplejwt.tokens import RefreshToken
-import jwt
-from datetime import datetime, timedelta
-from todolistbackproject import settings
-import json
 
 
 class TodoListModel(models.Model):
@@ -20,13 +15,17 @@ class TodoListModel(models.Model):
     owner = models.ForeignKey('UserModel', related_name='tasks', on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('created', 'status', 'owner')
+
+    def __str__(self):
+        return self.title
 
 
 class UserManager(BaseUserManager):
     use_in_migration = True
 
-    def __save_and_return(self, user, password: str, is_staff: bool, is_superuser: bool):
+    def __save_and_return(self, user, password: str,
+                          is_staff: bool, is_superuser: bool):
         try:
             user.is_staff = is_staff
             user.is_superuser = is_superuser
@@ -36,7 +35,8 @@ class UserManager(BaseUserManager):
         except IntegrityError:
             return None
 
-    def create_user(self, email: str, password: str = None, is_superuser: bool = False):
+    def create_user(self, email: str, password: str = None,
+                    is_superuser: bool = False):
 
         normalized_email = self.normalize_email(email)
         user = self.model(email=normalized_email)
@@ -45,27 +45,31 @@ class UserManager(BaseUserManager):
 
     def create_staffuser(self, email: str, password: str):
         user = self.create_user(email=email, password=password)
-        return self.__save_and_return(user=user, password=password, is_superuser=False, is_staff=True)
+        return self.__save_and_return(user=user, password=password,
+                                      is_superuser=False, is_staff=True)
 
     def create_superuser(self, email: str, password: str):
         user = self.create_user(email=email, password=password)
-        return self.__save_and_return(user=user, password=password, is_superuser=True, is_staff=True)
+        return self.__save_and_return(user=user, password=password,
+                                      is_superuser=True, is_staff=True)
 
     def get_by_natural_key(self, email):
         return self.get(email=email)
 
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
-    """
-        Define the model of the user
-    """
     objects = UserManager()
 
     username = None
+
     email = models.EmailField('email address', unique=True)
+
     is_ban = models.BooleanField(default=False)
+
     is_superuser = models.BooleanField(default=False)
+
     is_active = models.BooleanField(default=True)
+
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
@@ -73,12 +77,3 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return self.email
-
-    # def token(self):
-    #     refresh = RefreshToken.for_user(self)
-    #     token = {
-    #         'refresh': str(refresh),
-    #         'access': str(refresh.access_token)
-    #     }
-    #     return token
-              

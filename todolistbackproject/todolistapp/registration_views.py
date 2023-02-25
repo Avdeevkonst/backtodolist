@@ -6,19 +6,19 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .renderers import UserJSONRenderer
 from .models import UserModel
-from .serializers import UserSerializer, LoginSerializer, RegistrationSerializer
+from .serializers import UserSerializer, RegistrationSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import RetrieveUpdateAPIView, GenericAPIView
+from rest_framework.generics import GenericAPIView
 from django.http import JsonResponse
 
 
-class UserAuthenticationView(GenericAPIView):
-    serializer_class = LoginSerializer        
-    
-    def post(self, request):        
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return JsonResponse(serializer.data, status=status.HTTP_200_OK)        
+# class UserAuthenticationView(GenericAPIView):
+#     serializer_class = LoginSerializer
+#
+#     def post(self, request):
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserRegistrationView(APIView):
